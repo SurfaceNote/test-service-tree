@@ -1,0 +1,37 @@
+# build outputs
+**/bin/
+**/obj/
+
+# user/ide files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# git
+.git/
+.gitignore
+
+# logs
+**/*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# tests artifacts / coverage
+**/TestResults/
+**/coverage*/
+*.trx
+
+# local env/secrets
+**/.env
+**/.env.*
+**/secrets.json
+**/appsettings.Development.json
+
+# docker compose overrides (optional)
+docker-compose.override.yml
