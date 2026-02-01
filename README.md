@@ -4,6 +4,8 @@ docker build -t testservice .
 
 docker run --rm -p 8080:8080 --name testservice testservice
 
+после чего сваггер будет доступен по адрессу: http://localhost:8080/swagger/index.html
+
 -----------
 
 Дальше в сваггере сначала необходимо зарегистрировать пользователя.
