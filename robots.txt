@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://surfacenote.github.io/test-service-tree/sitemap.xml
