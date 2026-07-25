@@ -34,9 +34,13 @@ assert.ok(missingModel.items.filter(item=>item.priority==='data').length>=4,'П�
 
 const html=recommendations.render(one,'Краткие рекомендации по примеру');
 assert.match(html,/Краткие рекомендации по примеру/);
+assert.match(html,/Почему нужна консультация/);
+assert.match(html,/сроки платежей, сезонность, налоги/);
+assert.match(html,/выявить реальные причины отклонений/);
+assert.match(html,/расставить приоритеты по влиянию на деньги и прибыль/);
+assert.match(html,/план действий с суммами, сроками и ответственными/);
 assert.match(html,/Обратиться за консультацией/);
-assert.match(html,/детально разобрать обязательства/);
-assert.match(html,/Это не аудит|не заменяют аудит/);
+assert.match(html,/не заменяют аудит/);
 assert.doesNotMatch(html,/План действий на 90 дней/);
 assert.doesNotMatch(html,/Целевые значения и разрывы/);
-console.log('Diagnostic recommendations: concise guidance and consultation CTA are correct.');
+console.log('Diagnostic recommendations: compact consultation value block is correct.');
