@@ -63,7 +63,7 @@ for forbidden in ("localStorage","sessionStorage","document.write"):
         errors.append(f"forbidden API: {forbidden}")
 
 index=(root/"diagnostics/index.html").read_text(encoding="utf-8")
-for required in ("diagnostics-engine.js","diagnostics-v3.js","diagnostics-v3.css","Полнота данных учитывается отдельно"):
+for required in ("diagnostics-engine.js","diagnostics-v3.js","diagnostics-v3.css","Методика 2.6","Неполные данные оцениваются консервативно"):
     if required not in index:
         errors.append(f"diagnostics/index.html: missing {required}")
 for legacy in ("diagnostics-dashboard.js","diagnostics-boundary-fixes.js","diagnostics-layout.js","diagnostics-recommendations.js"):
