@@ -22,10 +22,12 @@ jobs:
       - run: node --check assets/diagnostics-dashboard.js
       - run: node --check assets/diagnostics-boundary-fixes.js
       - run: node --check assets/diagnostics-layout.js
+      - run: node --check assets/home-roadmap.js
       - run: node --check assets/service-expertise-data.js
       - run: node --check assets/service-passport-details.js
       - run: node --check assets/pages.js
       - run: node tests/diagnostics-engine.test.js
       - run: node tests/diagnostics-layout.test.js
+      - run: node tests/home-roadmap.test.js
       - run: node tests/service-expertise.test.js
       - run: node tests/service-passport-details.test.js
