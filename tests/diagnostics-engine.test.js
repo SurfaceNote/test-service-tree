@@ -62,6 +62,11 @@ const close=(actual,expected,tolerance=1e-6)=>assert.ok(Math.abs(actual-expected
   assert.equal(zero.score,null);
   assert.equal(zero.status,'Недостаточно данных');
   for(const value of [zero.margin,zero.coverage,zero.reserve,zero.over,zero.debt])assert.equal(value,null);
+
+  const noRevenueLoss=engine.calculate([{rev:0,exp:100,cash:null,liab:null,over:null,debt:null,stock:null}],'services');
+  assert.equal(noRevenueLoss.margin,-1);
+  assert.ok(noRevenueLoss.f.some(f=>f.key==='profit'&&f.score===0));
+  assert.equal(noRevenueLoss.status,'Высокий риск');
 }
 
 // Обязательные поля не подменяются нулём.
