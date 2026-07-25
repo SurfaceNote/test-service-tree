@@ -1,7 +1,7 @@
 name: Site checks
 on:
   push:
-    branches: [gh-pages, agent/financial-diagnostics-v3]
+    branches: [gh-pages, agent/financial-diagnostics-v3, agent/restore-navigation-content]
   pull_request:
 
 jobs:
@@ -18,12 +18,14 @@ jobs:
       - run: python scripts/check_site.py
       - run: node --check assets/data.js
       - run: node --check assets/core.js
+      - run: node --check assets/diagnostics.js
       - run: node --check assets/diagnostics-engine.js
       - run: node --check assets/diagnostics-v3.js
       - run: node --check assets/home-roadmap.js
       - run: node --check assets/service-expertise-data.js
       - run: node --check assets/service-passport-details.js
       - run: node --check assets/pages.js
+      - run: node tests/navigation-content.test.js
       - run: node tests/diagnostics-engine.test.js
       - run: node tests/diagnostics-v3.test.js
       - run: node tests/home-roadmap.test.js
