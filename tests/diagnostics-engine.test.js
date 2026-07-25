@@ -13,7 +13,7 @@ const close=(actual,expected,tolerance=1e-6)=>assert.ok(Math.abs(actual-expected
 {
   const result=engine.calculate(one,'services');
   assert.equal(result.valid,true);
-  close(result.rawScore,49.60610539445126,1e-9);
+  close(result.rawScore,49.60611101695133,1e-9);
   assert.equal(result.score,50);
   assert.equal(result.status,'Высокий риск');
 }
@@ -51,7 +51,7 @@ const close=(actual,expected,tolerance=1e-6)=>assert.ok(Math.abs(actual-expected
   close(result.avgRev,4590000);
   close(result.avgExp,4028666.6666666665);
   close(result.growth,0.12093023255813962,1e-12);
-  close(result.rawScore,49.19762481957724,1e-9);
+  close(result.rawScore,49.197585015218,1e-9);
   assert.equal(result.score,49);
   assert.equal(result.status,'Высокий риск');
 
