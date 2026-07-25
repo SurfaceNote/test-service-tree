@@ -18,4 +18,5 @@ jobs:
       - run: node --check assets/data.js
       - run: node --check assets/core.js
       - run: node --check assets/diagnostics.js
+      - run: node --check assets/diagnostics-dashboard.js
       - run: node --check assets/pages.js
