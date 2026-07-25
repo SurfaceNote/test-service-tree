@@ -1,7 +1,7 @@
 name: Site checks
 on:
   push:
-    branches: [financial-navigator-final, financial-navigator-expertise-v3, financial-navigator-diagnostics-layout-v5, gh-pages]
+    branches: [financial-navigator-final, financial-navigator-expertise-v3, financial-navigator-diagnostics-layout-v5, financial-navigator-recommendations-v6, gh-pages]
   pull_request:
 jobs:
   validate:
@@ -22,12 +22,14 @@ jobs:
       - run: node --check assets/diagnostics-dashboard.js
       - run: node --check assets/diagnostics-boundary-fixes.js
       - run: node --check assets/diagnostics-layout.js
+      - run: node --check assets/diagnostics-recommendations.js
       - run: node --check assets/home-roadmap.js
       - run: node --check assets/service-expertise-data.js
       - run: node --check assets/service-passport-details.js
       - run: node --check assets/pages.js
       - run: node tests/diagnostics-engine.test.js
       - run: node tests/diagnostics-layout.test.js
+      - run: node tests/diagnostics-recommendations.test.js
       - run: node tests/home-roadmap.test.js
       - run: node tests/service-expertise.test.js
       - run: node tests/service-passport-details.test.js
