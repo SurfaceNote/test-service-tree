@@ -3,11 +3,13 @@ const engine=require('../assets/diagnostics-engine.js');
 
 const one=[{rev:4820000,exp:4136000,cash:620000,liab:850000,over:620000,debt:1100000,stock:440000}];
 const three=[
-  {rev:4300000,exp:3900000,cash:520000,liab:790000,over:700000,debt:1200000,stock:400000},
-  {rev:4650000,exp:4050000,cash:570000,liab:820000,over:660000,debt:1150000,stock:420000},
+  {rev:4300000,exp:3900000,cash:null,liab:null,over:null,debt:null,stock:null},
+  {rev:4650000,exp:4050000,cash:null,liab:null,over:null,debt:null,stock:null},
   {rev:4820000,exp:4136000,cash:620000,liab:850000,over:620000,debt:1100000,stock:440000}
 ];
 const close=(actual,expected,tolerance=1e-6)=>assert.ok(Math.abs(actual-expected)<=tolerance,`${actual} differs from ${expected}`);
+
+assert.equal(engine.methodologyVersion,'2.6');
 
 // Полный пример сохраняет точный расчёт и получает итоговый статус.
 {
@@ -19,9 +21,12 @@ const close=(actual,expected,tolerance=1e-6)=>assert.ok(Math.abs(actual-expected
   assert.equal(result.status,'Высокий риск');
   assert.equal(result.completeness,100);
   assert.equal(result.provisional,false);
+  assert.equal(result.incomplete,false);
+  assert.equal(result.scoreBasis,'observed');
+  assert.equal(result.scoreRange,null);
 }
 
-// Только выручка и расходы не могут дать статус «устойчивый», даже при высокой марже.
+// Только выручка и расходы не могут дать статус устойчивости.
 {
   const partial=engine.calculate([{rev:1000000,exp:700000,cash:null,liab:null,over:null,debt:null,stock:null}],'services');
   assert.equal(partial.valid,true);
@@ -30,19 +35,29 @@ const close=(actual,expected,tolerance=1e-6)=>assert.ok(Math.abs(actual-expected
   assert.equal(partial.rawScore,null);
   assert.equal(partial.status,'Предварительный результат');
   assert.equal(partial.provisional,true);
+  assert.equal(partial.incomplete,true);
+  assert.equal(partial.scoreBasis,'range');
   close(partial.completeness,27.77777777777778,1e-9);
   close(partial.scoreRange.min,27.77777777777778,1e-9);
   assert.equal(partial.scoreRange.max,100);
   assert.match(partial.risks[0],/Полнота данных 28%/);
 }
 
-// При полноте выше порога итоговый статус снова разрешён.
+// При покрытии от 80% до 100% статус определяется по нижней границе, а не по наблюдаемым 100 баллам.
 {
-  const enough=engine.calculate([{rev:1000,exp:800,cash:500,liab:400,over:0,debt:null,stock:null}],'services');
-  close(enough.completeness,88.88888888888889,1e-9);
+  const enough=engine.calculate([{rev:1000,exp:800,cash:1000,liab:400,over:null,debt:0,stock:null}],'services');
+  close(enough.completeness,83.33333333333333,1e-9);
+  close(enough.observedScore,100,1e-9);
+  close(enough.conservativeScore,83.33333333333333,1e-9);
+  close(enough.rawScore,83.33333333333333,1e-9);
+  assert.equal(enough.score,83);
+  assert.equal(enough.status,'Стабильный ориентир');
   assert.equal(enough.provisional,false);
-  assert.notEqual(enough.score,null);
-  assert.notEqual(enough.status,'Предварительный результат');
+  assert.equal(enough.incomplete,true);
+  assert.equal(enough.scoreBasis,'minimum');
+  close(enough.scoreRange.min,83.33333333333333,1e-9);
+  assert.equal(enough.scoreRange.max,100);
+  assert.match(enough.risks[0],/нижней границе/);
 }
 
 // Нулевые обязательства считаются полноценным положительным фактором, а не пропуском данных.
@@ -111,4 +126,4 @@ const close=(actual,expected,tolerance=1e-6)=>assert.ok(Math.abs(actual-expected
   assert.match(invalid.errors[0],/выручка/i);
 }
 
-console.log('Diagnostics engine 2.5: all tests passed.');
+console.log('Diagnostics engine 2.6: all tests passed.');
