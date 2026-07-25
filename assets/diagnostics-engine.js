@@ -5,7 +5,7 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
 
-  const methodologyVersion='2.5';
+  const methodologyVersion='2.6';
   const completenessThreshold=80;
   const fields=['rev','exp','cash','liab','over','debt','stock'];
   const configs={
@@ -27,7 +27,7 @@
   const clamp=(value,min=0,max=1)=>Math.min(max,Math.max(min,value));
   const sum=(months,key)=>months.reduce((total,month)=>total+(isNumber(month[key])?month[key]:0),0);
   const baseStatus=rawScore=>rawScore===null||!Number.isFinite(rawScore)?'Недостаточно данных':rawScore>=85?'Устойчивый ориентир':rawScore>=70?'Стабильный ориентир':rawScore>=50?'Требует внимания':'Высокий риск';
-  const completenessLabel=value=>value>=completenessThreshold?'Достаточно данных':value>=50?'Частичные данные':'Недостаточно данных';
+  const completenessLabel=value=>value>=100?'Полные данные':value>=completenessThreshold?'Достаточно для консервативного статуса':value>=50?'Частичные данные':'Недостаточно данных';
 
   function expectedFactors(period,config){
     const factors=[
@@ -57,8 +57,9 @@
     if(errors.length){
       return {
         valid:false,errors,n,c,months,score:null,rawScore:null,observedScore:null,
-        status:'Недостаточно данных',f:[],risks:[],missing:[],completeness:0,
-        completenessLabel:completenessLabel(0),provisional:true,scoreRange:null
+        conservativeScore:null,status:'Недостаточно данных',f:[],risks:[],missing:[],
+        completeness:0,completenessLabel:completenessLabel(0),provisional:true,
+        incomplete:true,scoreRange:null,scoreBasis:'none'
       };
     }
 
@@ -99,14 +100,21 @@
     const observedScore=availableWeight?knownWeighted/availableWeight*100:null;
     const completeness=expectedWeight?availableWeight/expectedWeight*100:0;
     const provisional=completeness<completenessThreshold;
+    const incomplete=completeness<100-1e-9;
     const minimumScore=expectedWeight?knownWeighted/expectedWeight*100:null;
     const maximumScore=expectedWeight?(knownWeighted+(expectedWeight-availableWeight))/expectedWeight*100:null;
-    const rawScore=provisional?null:observedScore;
+    const conservativeScore=incomplete?minimumScore:observedScore;
+    const rawScore=provisional?null:conservativeScore;
     const score=rawScore===null?null:Math.round(rawScore);
-    const status=observedScore===null?'Недостаточно данных':provisional?'Предварительный результат':baseStatus(observedScore);
+    const status=observedScore===null?'Недостаточно данных':provisional?'Предварительный результат':baseStatus(conservativeScore);
+    const scoreBasis=provisional?'range':incomplete?'minimum':'observed';
 
     const risks=[];
-    if(provisional)risks.push(`Полнота данных ${Math.round(completeness)}%. Для итогового статуса требуется не менее ${completenessThreshold}%.`);
+    if(provisional){
+      risks.push(`Полнота данных ${Math.round(completeness)}%. Для итогового статуса требуется не менее ${completenessThreshold}%.`);
+    }else if(incomplete){
+      risks.push(`Полнота данных ${Math.round(completeness)}%. Статус определён консервативно по нижней границе возможного диапазона.`);
+    }
     if(profit<0)risks.push(`За ${n===1?'1 месяц':'3 месяца'} расходы превысили выручку.`);
     if(!noLiabilities&&coverage!==null&&coverage<1)risks.push('Денег недостаточно для полного покрытия краткосрочных обязательств.');
     if(reserve!==null&&reserve<c.reserve*.75)risks.push('Денежный резерв существенно ниже внутреннего ориентира методики.');
@@ -128,9 +136,9 @@
       valid:true,errors:[],n,c,months,rev,exp,avgRev,avgExp,end,profit,margin,
       coverage,noLiabilities,reserve,over,debt,growth,stockDays,f:factors,
       expectedFactors:expected,expectedWeight,availableWeight,observedScore,
-      rawScore,score,status,risks,missing,completeness,
-      completenessLabel:completenessLabel(completeness),provisional,
-      scoreRange:minimumScore===null?null:{min:minimumScore,max:maximumScore}
+      conservativeScore,rawScore,score,status,risks,missing,completeness,
+      completenessLabel:completenessLabel(completeness),provisional,incomplete,
+      scoreBasis,scoreRange:incomplete&&minimumScore!==null?{min:minimumScore,max:maximumScore}:null
     };
   }
 
