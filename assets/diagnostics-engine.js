@@ -35,7 +35,7 @@
     });
     if(errors.length)return {valid:false,errors,n,c,months,score:null,rawScore:null,status:status(null),f:[],risks:[]};
     const rev=sum(months,'rev'),exp=sum(months,'exp'),avgRev=n?rev/n:0,avgExp=n?exp/n:0,end=months[n-1]||normalizeMonth({}),profit=rev-exp;
-    const margin=rev>0?profit/rev:null;
+    const margin=rev>0?profit/rev:(exp>0?-1:null);
     const noLiabilities=isNumber(end.liab)&&end.liab===0;
     const coverage=isNumber(end.cash)&&isNumber(end.liab)&&end.liab>0?end.cash/end.liab:null;
     const reserve=isNumber(end.cash)&&avgExp>0?end.cash/avgExp*30:null;
